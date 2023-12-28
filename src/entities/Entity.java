@@ -4,6 +4,7 @@ import tiles.MapTile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,7 +18,7 @@ public abstract class Entity {
     public int worldY;
     public int speed;
     public int movingSpriteCounter;
-    public Rectangle collisionArea;
+    public Rectangle collisionAreaScreen;
     public MovementDirection currentMovementDirection;
     public BufferedImage currentSprite;
     public BufferedImage spriteUp1, spriteUp2, spriteUp3;
@@ -116,21 +117,11 @@ public abstract class Entity {
         }
     }
 
-    public boolean checkCollision(List<MapTile> mapTiles, int requestX, int requestY) {
-
-        for (MapTile mapTile : mapTiles) {
-           int minX = mapTile.x - 20;
-           int maxX = mapTile.x + 20;
-           int minY = mapTile.y - 20;
-           int maxY = mapTile.y + 20;
-
-           if (requestX > minX && requestX < maxX) {
-               if (requestY > minY && requestY < maxY) {
-                   System.out.println("collison!");
-                   return true;
-               }
-           }
-
+    public boolean checkCollision(List<MapTile> collisionTiles, int requestX, int requestY) {
+        for (MapTile collisionTile : collisionTiles) {
+            if (collisionTile.isPlayerCollisionWithTile(requestX, requestY)) {
+                return true;
+            }
         }
         return false;
     }

@@ -1,6 +1,7 @@
 package tiles;
 
 public abstract class Tile {
+    public final int size = 32; // px
     public int id;
     public boolean collision;
     public String path;

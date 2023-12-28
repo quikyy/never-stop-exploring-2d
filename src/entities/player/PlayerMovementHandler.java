@@ -30,5 +30,6 @@ public class PlayerMovementHandler implements KeyListener {
         if (currentPressedKeys.isEmpty()) {
             lastKeyCodePressed = 0;
         }
+
     }
 }
