@@ -1,4 +1,6 @@
-package tiles;
+package tiles.types;
+
+import tiles.Tile;
 
 public class MapTile {
 
@@ -7,28 +9,15 @@ public class MapTile {
     public int playerScreenY;
     public int worldX;
     public int worldY;
-
-    public int minPlayerScreenX;
-    public int maxPlayerScreenX;
-
-    public int minPlayerScreenY;
-    public int maxPlayerScreenY;
     public TileCollisionArea tileCollisionArea;
-
 
     public MapTile(Tile tile, int playerScreenX, int playerScreenY, int worldX, int worldY) {
         this.tile = tile;
         this.playerScreenX = playerScreenX;
         this.playerScreenY = playerScreenY;
-
         this.worldX = worldX;
         this.worldY = worldY;
-
-        this.minPlayerScreenX = playerScreenX;
-        this.maxPlayerScreenX = playerScreenX + tile.size;
-        this.minPlayerScreenY = playerScreenY;
-        this.maxPlayerScreenY = playerScreenY + tile.size;
-        tileCollisionArea = new TileCollisionArea(worldX, worldY, tile.size);
+        tileCollisionArea = new TileCollisionArea(worldX, worldY, tile.size, tile.bufferArea);
     }
 
     public boolean isPlayerCollisionWithTile(int requestX, int requestY) {
@@ -44,16 +33,11 @@ public class MapTile {
         public final int bottomLeftCorner;
         public final int bottomRightCorner;
 
-        public TileCollisionArea (int worldX, int worldY, int tileSize) {
-            this.topLeftCorner = worldX - tileSize + 6;
-            this.topRightCorner = worldX + tileSize - 6;
-            this.bottomLeftCorner = worldY - tileSize + 6;
-            this.bottomRightCorner = worldY + tileSize - 6;
+        public TileCollisionArea (int worldX, int worldY, int tileSize, int bufferArea) {
+            this.topLeftCorner = worldX - tileSize + bufferArea;
+            this.topRightCorner = worldX + tileSize - bufferArea;
+            this.bottomLeftCorner = worldY - tileSize + bufferArea;
+            this.bottomRightCorner = worldY + tileSize - bufferArea;
         }
     }
-
-
-
-
-
 }

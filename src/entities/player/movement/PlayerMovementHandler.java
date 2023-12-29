@@ -1,4 +1,4 @@
-package entities.player;
+package entities.player.movement;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -7,9 +7,9 @@ import java.util.Set;
 
 public class PlayerMovementHandler implements KeyListener {
 
-    int lastKeyCodePressed = 0;
+    public int lastKeyCodePressed = 0;
 
-    Set<Integer> currentPressedKeys = new HashSet<>();
+    public Set<Integer> currentPressedKeys = new HashSet<>();
 
     @Override
     public void keyTyped(KeyEvent e) {

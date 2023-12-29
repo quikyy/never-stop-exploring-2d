@@ -1,8 +1,8 @@
 package window;
 
 import entities.player.Player;
-import entities.player.PlayerMovementHandler;
-import tiles.TilesManager;
+import entities.player.movement.PlayerMovementHandler;
+import tiles.manager.TilesManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -67,8 +67,10 @@ public class GameScreen extends JPanel implements Runnable {
         Toolkit.getDefaultToolkit().sync();
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
+
         tilesManager.draw(g2d);
         player.draw(g2d);
+
         g2d.dispose();
     }
 }

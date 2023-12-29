@@ -3,9 +3,10 @@ package utils;
 import java.io.*;
 
 public class MapLoader {
-    final static private String mapPath = "src/resources/map/map.txt";
+    final static public String tilesMapPath = "src/resources/map/tiles/tiles_map.txt";
+    final static public String hoverMapPath = "src/resources/map/tiles/hover_map.txt";
 
-    public static int[][] loadMapFromFile(int maxWorldColumn) {
+    public static int[][] loadMapFromFile(int maxWorldColumn, String mapPath) {
         int[][] arr = new int[32][40];
         int row = 0;
         try {
@@ -24,5 +25,6 @@ public class MapLoader {
         }
         return arr;
     }
+
 
 }

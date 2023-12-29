@@ -1,19 +1,19 @@
 package tiles;
-
 public abstract class Tile {
+
     public final int size = 32; // px
     public int id;
-    public boolean collision;
     public String path;
+    public boolean collision;
+    public int bufferArea;
+    public boolean isFast;
 
-    public Tile(int id, String path, boolean collision) {
-        this.id = id;
+    public Tile(String path, boolean collision, int bufferArea, boolean isFast) {
         this.path = path;
         this.collision = collision;
+        this.bufferArea = bufferArea;
+        this.isFast = isFast;
     }
 
-    public Tile(int id, boolean collision) {
-        this.id = id;
-        this.collision = collision;
-    }
+
 }

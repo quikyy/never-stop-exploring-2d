@@ -1,32 +1,42 @@
 package entities.player;
 
 import entities.Entity;
-import entities.MovementDirection;
+import entities.player.movement.MovementDirection;
+import entities.player.movement.PlayerMovementHandler;
+import tiles.repository.TilesRepository;
+import tiles.types.MapTile;
 import window.GameScreen;
 
 import java.awt.*;
+import java.io.IOException;
 
 public class Player extends Entity {
+
     public GameScreen gameScreen;
+    PlayerMovementHandler playerMovementHandler;
+
     public final int screenX;
     public final int screenY;
-    public final int minScreenX;
-    public final int maxScreenX;
-    public final int minScreenY;
-    public final int maxScreenY;
-    PlayerMovementHandler playerMovementHandler;
+
+    public final int leftScreenInSight;
+    public final int rightScreenInSight;
+    public final int topScreenInSight;
+    public final int bottomScreenInSight;
+    private final int tilesInSight = 11;
 
     public Player(PlayerMovementHandler playerMovementHandler, GameScreen gameScreen) {
         this.playerMovementHandler = playerMovementHandler;
         this.gameScreen = gameScreen;
+
         this.screenX = gameScreen.screeWidth / 2  - (gameScreen.tileSize); // center of the screen
         this.screenY = gameScreen.screenHeight / 2  - (gameScreen.tileSize); // center of the screen
 
-        this.minScreenX = screenX - (11 * gameScreen.tileSize);
-        this.maxScreenX = screenX + (11 * gameScreen.tileSize);
-        this.minScreenY = screenY - (11 * gameScreen.tileSize);
-        this.maxScreenY = screenY + (11 * gameScreen.tileSize);
-        super.loadSprites("src/resources/character/character_sprites.png");
+        this.leftScreenInSight = screenX - (tilesInSight * gameScreen.tileSize);
+        this.rightScreenInSight = screenX + (tilesInSight * gameScreen.tileSize);
+        this.topScreenInSight = screenY - (tilesInSight * gameScreen.tileSize);
+        this.bottomScreenInSight = screenY + (tilesInSight * gameScreen.tileSize);
+
+        super.loadEntitySprites("src/resources/character/character_sprites.png");
         setDefaultValues();
     }
 
@@ -34,73 +44,110 @@ public class Player extends Entity {
         super.worldX = screenX; // resp at center of the screen
         super.worldY = screenY; // resp at center of the screen
 
-        super.collisionAreaScreen = new Rectangle(screenX, screenY, 28, 28);
+        super.collisionAreaScreen = new Rectangle(screenX, screenY, 32, 32);
 
-        super.speed = 4; // init movement speed
+        super.speed = 2; // init movement speed
         super.currentMovementDirection = MovementDirection.STAND_DOWN;
-        super.currentSprite = spriteDown1;
+        super.currentSprite = standDownImg;
     }
-    int x = 1;
+    public boolean isSprinting = false;
     public void update() {
         int requestX = worldX;
         int requestY = worldY;
         switch (playerMovementHandler.lastKeyCodePressed) {
             case 87 -> {
-                requestY -= speed;
-                if (checkCollision(gameScreen.tilesManager.collisionTiles, requestX, requestY)) {
+                if (isSprinting) {
+                    requestY -= 4;
+                } else {
+                    requestY -= speed;
+
+                }
+                if (checkEntityCollisionWithTiles(requestX, requestY)) {
                     return;
                 }
                 setMovingSpriteImage(MovementDirection.MOVE_UP);
-                worldY -= speed;
+                worldY = requestY;
             }
             case 83 -> {
-                requestY += speed;
-                if (checkCollision(gameScreen.tilesManager.collisionTiles, requestX, requestY)) {
+                if (isSprinting) {
+                    requestY += 4;
+                } else {
+                    requestY += speed;
+                }
+                if (checkEntityCollisionWithTiles(requestX, requestY)) {
                     return;
                 }
                 setMovingSpriteImage(MovementDirection.MOVE_DOWN);
-                worldY += speed;
+                worldY = requestY;
             }
             case 65 -> {
-                requestX -= speed;
-                if (checkCollision(gameScreen.tilesManager.collisionTiles, requestX, requestY)) {
+                if (isSprinting) {
+                    requestX -= 4;
+                } else {
+                    requestX -= speed;
+                }
+                if (checkEntityCollisionWithTiles(requestX, requestY)) {
                     return;
                 }
                 setMovingSpriteImage(MovementDirection.MOVE_LEFT);
-                worldX -= speed;
+                worldX = requestX;
             }
             case 68 -> {
-                requestX += speed;
-                if (checkCollision(gameScreen.tilesManager.collisionTiles, requestX, requestY)) {
+                if (isSprinting) {
+                    requestX += 4;
+                } else {
+                    requestX += speed;
+                }
+                if (checkEntityCollisionWithTiles(requestX, requestY)) {
                     return;
                 }
                 setMovingSpriteImage(MovementDirection.MOVE_RIGHT);
-                worldX += speed;
+                worldX = requestX;
             }
             case 67 -> {
+                requestX += speed / 2;
+                requestY +=  speed / 2;
                 setMovingSpriteImage(MovementDirection.MOVE_RIGHT);
-                worldX += speed / 2;
-                worldY += speed / 2;
+                worldX = requestX;
+                worldY = requestY;
             }
             case 90 -> {
+                requestX -= speed / 2;
+                requestY += speed / 2;
+                if (checkEntityCollisionWithTiles(requestX, requestY)) {
+                    return;
+                }
                 setMovingSpriteImage(MovementDirection.MOVE_LEFT);
-                worldX -= speed / 2;
-                worldY += speed / 2;
+                worldX = requestX;
+                worldY = requestY;
             }
             case 69 -> {
+                requestX += speed / 2;
+                requestY-= speed / 2;
+                if (checkEntityCollisionWithTiles(requestX, requestY)) {
+                    return;
+                }
                 setMovingSpriteImage(MovementDirection.MOVE_RIGHT);
-                worldX += speed / 2;
-                worldY -= speed / 2;
+                worldX = requestX;
+                worldY = requestY;
             }
             case 81 -> {
+                requestX -= speed / 2;
+                requestY -= speed / 2;
+                if (checkEntityCollisionWithTiles(requestX, requestY)) {
+                    return;
+                }
                 setMovingSpriteImage(MovementDirection.MOVE_LEFT);
-                worldX -= speed / 2;
-                worldY -= speed / 2;
+                worldX = requestX;
+                worldY = requestY;
             }
-
             case 0 -> {
                 setStandSpriteImage();
+                speed = 2;
             }
+        }
+        if (!TilesRepository.mapTiles.isEmpty()) {
+            isPlayerOnFastTile(requestX, requestY);
         }
     }
 
@@ -108,5 +155,21 @@ public class Player extends Entity {
         g2d.drawImage(currentSprite, screenX, screenY, null);
         g2d.setColor(Color.yellow);
         g2d.drawRect(collisionAreaScreen.x, collisionAreaScreen.y, collisionAreaScreen.width, collisionAreaScreen.height);
+    }
+
+    private void isPlayerOnFastTile(int requestX, int requestY) {
+        try {
+            for (MapTile mapTile : TilesRepository.mapTiles) {
+                if (mapTile.isPlayerCollisionWithTile(requestX, requestY)) {
+                    if (mapTile.tile.isFast) {
+                        isSprinting = true;
+                        return;
+                    }
+                }
+            }
+            isSprinting = false;
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

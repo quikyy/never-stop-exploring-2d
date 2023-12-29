@@ -1,4 +1,4 @@
-package entities;
+package entities.player.movement;
 
 public enum MovementDirection {
     MOVE_UP,
